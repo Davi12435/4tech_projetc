@@ -16,36 +16,36 @@ app.post('/usuarios', async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             contact: req.body.contact,
-        }
-    })
+        },
+    });
 
-    res.status(201).json(res.body)
+    res.status(201).json({ message: 'Usuarios criado com sucesso', user})
 
-})
+});
 app.get('/usuarios', async (req, res) => {
-    let users = []
+    let users;
 
-    if (req.body) {
+    if (req.body.name || req.body.email || req.body.contact) {
         users = await prisma.user.findMany({
             where: {
                     name: req.query.name,
                     email: req.query.email,
                     contact: req.query.contact
             },
-        })
+        });
         } else {
         users = await prisma.user.findMany()
     }
 
     res.status(200).json(users)
 
-})
+});
 
     app.put('/usuarios/:id', async (req, res) => {
 
         await prisma.user.update({
         where: {
-            id: req.params.id,
+            id: Number(req.params.id),
         },
         data: {
             name: req.body.name,
@@ -61,7 +61,7 @@ app.get('/usuarios', async (req, res) => {
 app.delete('/usuarios/:id', async (req, res) => {
     await prisma.user.delete({
         where: {
-            id: req.params.id,
+            id: Number(req.params.id),
         },
     })
 
