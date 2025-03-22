@@ -11,7 +11,7 @@ app.use(cors())
 
 app.post('/usuarios', async (req, res) => {
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
         data: {
             name: req.body.name,
             email: req.body.email,
@@ -25,7 +25,7 @@ app.post('/usuarios', async (req, res) => {
 app.get('/usuarios', async (req, res) => {
     let users;
 
-    if (req.body.name || req.body.email || req.body.contact) {
+    if (req.query.name || req.query.email || req.query.contact) {
         users = await prisma.user.findMany({
             where: {
                     name: req.query.name,
@@ -59,16 +59,24 @@ app.get('/usuarios', async (req, res) => {
 })
 
 app.delete('/usuarios/:id', async (req, res) => {
-    await prisma.user.delete({
-        where: {
-            id: Number(req.params.id),
-        },
-    })
-
-    res.status(200).json({ message: 'Usuario deletado com sucesso!'})
+    try{
+        const id = req.params.id;
+        await prisma.user.delete({
+            where: {
+                id
+            },
+        })
+    
+        res.status(200).json({ message: 'Usuario deletado com sucesso!'})
+    }catch(err){
+        console.log(err)
+        res.status(500).json({ message: 'Erro ao deletar o usuário'})
+    }
 })
 
-app.listen(3000)
+app.listen(3000, ()=>{
+    console.log("Servidor rodando na porta http://localhost:3000")
+})
 
 //  user: davipadilha
 //  senha do banco de dados: lG3M27LxIrQ5U3zw
